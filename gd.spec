@@ -1,14 +1,10 @@
-%define name	gd
-%define version	2.0.34
-%define release	%mkrel 1
-
-%define major	2
+%define major 2
 %define libname	%mklibname %{name} %{major}
 
 Summary:	A library used to create PNG, JPEG, or WBMP images
-Name:		%{name}
-Version:	%{version}
-Release:	%{release}
+Name:		gd
+Version:	2.0.35
+Release:	%mkrel 1
 License:	BSD-style
 Source0:	http://www.libgd.org/releases/%{name}-%{version}.tar.bz2
 Group:		System/Libraries
@@ -189,5 +185,4 @@ libtoolize --copy --force; aclocal-1.7; automake-1.7 --copy --add-missing; autoc
 %{_bindir}/gd2togif
 %{_bindir}/gdcmpgif
 %{_bindir}/giftogd2
-
 
