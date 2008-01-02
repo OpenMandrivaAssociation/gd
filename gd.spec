@@ -20,6 +20,7 @@ BuildRequires:	png-devel
 BuildRequires:	X11-devel
 BuildRequires:	xpm-devel
 BuildRequires:	zlib-devel
+BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
 
 %description
 gd is a graphics library. It allows your code to quickly draw
