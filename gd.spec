@@ -164,8 +164,8 @@ rm -rf %{buildroot}
 
 %makeinstall
 
-%multiarch_binaries %{buildroot} %{_bindir}/gdlib-config
-%multiarch_includes %{buildroot} %{_includedir}/gd.h
+%multiarch_binaries %{buildroot}%{_bindir}/gdlib-config
+%multiarch_includes %{buildroot}%{_includedir}/gd.h
 
 %post -n %{libname} -p /sbin/ldconfig
 
