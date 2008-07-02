@@ -6,7 +6,7 @@
 Summary:	A library used to create PNG, JPEG, or WBMP images
 Name:		gd
 Version:	2.0.35
-Release:	%mkrel 4
+Release:	%mkrel 5
 License:	BSD-style
 Source0:	http://www.libgd.org/releases/%{name}-%{version}.tar.bz2
 Group:		System/Libraries
@@ -163,6 +163,8 @@ libtoolize --copy --force; aclocal-1.7; automake-1.7 --copy --add-missing; autoc
 rm -rf %{buildroot} 
 
 %makeinstall
+
+sed -i -e 's!-Wl,--as-needed!!' -e 's!-Wl,--no-undefined!!' %{buildroot}%{_bindir}/gdlib-config
 
 %multiarch_binaries %{buildroot}%{_bindir}/gdlib-config
 %multiarch_includes %{buildroot}%{_includedir}/gd.h
