@@ -6,7 +6,7 @@
 Summary:	A library used to create PNG, JPEG, or WBMP images
 Name:		gd
 Version:	2.0.35
-Release:	%mkrel 5
+Release:	%mkrel 6
 License:	BSD-style
 Source0:	http://www.libgd.org/releases/%{name}-%{version}.tar.bz2
 Group:		System/Libraries
@@ -168,6 +168,8 @@ sed -i -e 's!-Wl,--as-needed!!' -e 's!-Wl,--no-undefined!!' %{buildroot}%{_bindi
 
 %multiarch_binaries %{buildroot}%{_bindir}/gdlib-config
 %multiarch_includes %{buildroot}%{_includedir}/gd.h
+
+install -m0644 gdhelpers.h %{buildroot}%{_includedir}/
 
 %if %mdkversion < 200900
 %post -n %{libname} -p /sbin/ldconfig
