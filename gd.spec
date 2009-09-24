@@ -6,7 +6,7 @@
 Summary:	A library used to create PNG, JPEG, or WBMP images
 Name:		gd
 Version:	2.0.35
-Release:	%mkrel 9
+Release:	%mkrel 10
 License:	BSD-style
 Source0:	http://www.libgd.org/releases/%{name}-%{version}.tar.bz2
 Patch0:		gd-2.0.35-format_not_a_string_literal_and_no_format_arguments.diff
@@ -20,7 +20,7 @@ BuildRequires:	freetype-devel
 BuildRequires:	gettext-devel
 BuildRequires:	jpeg-devel
 BuildRequires:	png-devel
-BuildRequires:	X11-devel
+BuildRequires:	libx11-devel, libfontconfig-devel
 BuildRequires:	xpm-devel
 BuildRequires:	zlib-devel
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
