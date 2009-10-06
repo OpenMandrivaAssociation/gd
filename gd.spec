@@ -6,15 +6,15 @@
 Summary:	A library used to create PNG, JPEG, or WBMP images
 Name:		gd
 Version:	2.0.35
-Release:	%mkrel 10
+Release:	%mkrel 11
 License:	BSD-style
-Source0:	http://www.libgd.org/releases/%{name}-%{version}.tar.bz2
-Patch0:		gd-2.0.35-format_not_a_string_literal_and_no_format_arguments.diff
 Group:		System/Libraries
 URL:		http://www.libgd.org/
+Source0:	http://www.libgd.org/releases/%{name}-%{version}.tar.bz2
+Patch0:		gd-2.0.35-format_not_a_string_literal_and_no_format_arguments.diff
+Patch1:		0001_cvs20070904.patch
+Patch2:		0002_cvs20070916.patch
 #It uses freetype2-devel, but uses the old library for gdttf
-BuildRequires:	autoconf2.5
-BuildRequires:	automake1.7
 BuildRequires:	freetype2-devel
 BuildRequires:	freetype-devel
 BuildRequires:	gettext-devel
@@ -151,14 +151,12 @@ This package contains various utilities utilizing the gd library.
 
 %setup -q -n gd-%{version}
 %patch0 -p0 -b .format_not_a_string_literal_and_no_format_arguments
+%patch1 -p1 -b .cvs20070904
+%patch2 -p1 -b .cvs20070916
+autoreconf -fi
 
 %build
-export WANT_AUTOCONF_2_5=1
-rm -f configure
-libtoolize --copy --force; aclocal-1.7; automake-1.7 --copy --add-missing; autoconf
-
 %configure2_5x
-
 %make 
 
 %install
