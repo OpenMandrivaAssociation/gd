@@ -6,7 +6,7 @@
 Summary:	A library used to create PNG, JPEG, or WBMP images
 Name:		gd
 Version:	2.0.35
-Release:	%mkrel 12
+Release:	%mkrel 13
 License:	BSD-style
 Group:		System/Libraries
 URL:		http://www.libgd.org/
@@ -14,6 +14,7 @@ Source0:	http://www.libgd.org/releases/%{name}-%{version}.tar.bz2
 Patch0:		gd-2.0.35-format_not_a_string_literal_and_no_format_arguments.diff
 Patch1:		0001_cvs20070904.patch
 Patch2:		0002_cvs20070916.patch
+Patch3:		gd-2.0.35-CVE-2009-3546.diff
 #It uses freetype2-devel, but uses the old library for gdttf
 BuildRequires:	freetype2-devel
 BuildRequires:	freetype-devel
@@ -153,6 +154,8 @@ This package contains various utilities utilizing the gd library.
 %patch0 -p0 -b .format_not_a_string_literal_and_no_format_arguments
 %patch1 -p1 -b .cvs20070904
 %patch2 -p1 -b .cvs20070916
+%patch3 -p0 -b .CVE-2009-3546
+
 autoreconf -fi
 
 %build
