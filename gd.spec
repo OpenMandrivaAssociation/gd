@@ -6,7 +6,7 @@
 Summary:	A library used to create PNG, JPEG, or WBMP images
 Name:		gd
 Version:	2.0.35
-Release:	%mkrel 16
+Release:	%mkrel 17
 License:	BSD-style
 Group:		System/Libraries
 URL:		http://www.libgd.org/
@@ -194,11 +194,11 @@ rm -rf %{buildroot}
 %defattr(-,root,root)
 %attr(644,root,root) %doc index.html
 %{_bindir}/gdlib-config
-%multiarch %{multiarch_bindir}/gdlib-config
+%{multiarch_bindir}/gdlib-config
 %{_libdir}/*.so
 %{_libdir}/*.la
 %{_includedir}/*.h
-%multiarch %{multiarch_includedir}/*.h
+%{multiarch_includedir}/*.h
 
 %files -n %{staticdevelname}
 %defattr(-,root,root)
