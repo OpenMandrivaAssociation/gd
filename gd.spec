@@ -170,6 +170,7 @@ rm -rf %{buildroot}
 sed -i -e 's!-Wl,--as-needed!!' -e 's!-Wl,--no-undefined!!' %{buildroot}%{_bindir}/gdlib-config
 
 %multiarch_binaries %{buildroot}%{_bindir}/gdlib-config
+
 %multiarch_includes %{buildroot}%{_includedir}/gd.h
 
 install -m0644 gdhelpers.h %{buildroot}%{_includedir}/
