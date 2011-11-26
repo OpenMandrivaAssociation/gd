@@ -127,7 +127,6 @@ install -m0644 gdhelpers.h %{buildroot}%{_includedir}/
 %{_bindir}/gdlib-config
 %{multiarch_bindir}/gdlib-config
 %{_libdir}/*.so
-%{_libdir}/*.la
 %{_includedir}/*.h
 %{multiarch_includedir}/*.h
 
