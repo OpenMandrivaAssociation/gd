@@ -1,7 +1,6 @@
 %define major 2
 %define libname %mklibname %{name} %{major}
 %define develname %mklibname %{name} -d
-%define staticdevelname %mklibname %{name} -d -s
 
 Summary:	A library used to create PNG, JPEG, or WBMP images
 Name:		gd
