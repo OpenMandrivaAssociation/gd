@@ -96,6 +96,8 @@ This package contains various utilities utilizing the gd library.
 %patch3 -p0 -b .CVE-2009-3546
 
 %build
+sed -i -e 's,AM_PROG_CC_STDC,AC_PROG_CC,g' configure.*
+libtoolize --force --copy
 autoreconf -fi
 %configure2_5x \
 	--disable-static
@@ -103,7 +105,6 @@ autoreconf -fi
 %make 
 
 %install
-rm -rf %{buildroot} 
 %makeinstall
 
 sed -i -e 's!-Wl,--as-needed!!' -e 's!-Wl,--no-undefined!!' %{buildroot}%{_bindir}/gdlib-config
