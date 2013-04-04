@@ -95,6 +95,8 @@ This package contains various utilities utilizing the gd library.
 %patch2 -p1 -b .cvs20070916
 %patch3 -p0 -b .CVE-2009-3546
 
+chmod a+r *.c *.h
+
 %build
 sed -i -e 's,AM_PROG_CC_STDC,AC_PROG_CC,g' configure.*
 libtoolize --force --copy
@@ -295,7 +297,7 @@ install -m0644 gdhelpers.h %{buildroot}%{_includedir}/
 * Thu Jun 10 2004 Stew Benedict <sbenedict@mandrakesoft.com> 2.0.26-1mdk
 - 2.0.26
 
-* Sun Apr 18 2004 Per Øyvind Karlsen <peroyvind@linux-mandrake.com> 2.0.22-1mdk
+* Sun Apr 18 2004 Per Ã˜yvind Karlsen <peroyvind@linux-mandrake.com> 2.0.22-1mdk
 - 2.0.22
 - fix buildrequires
 - spec cosmetics
