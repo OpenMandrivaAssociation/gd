@@ -1,5 +1,5 @@
---- gdtestft.c	2006-04-05 17:55:27.000000000 +0200
-+++ gdtestft.c.oden	2008-12-20 18:18:06.000000000 +0100
+--- ./gdtestft.c	2006-04-05 17:55:27.000000000 +0200
++++ ./gdtestft.c.oden	2008-12-20 18:18:06.000000000 +0100
 @@ -74,7 +74,7 @@ main (int argc, char *argv[])
      gdImageStringFT ((gdImagePtr) NULL, &brect[0], 0, f, sz, angle, 0, 0, s);
    if (err)
