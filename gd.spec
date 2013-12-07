@@ -5,7 +5,7 @@
 Summary:	A library used to create PNG, JPEG, or WBMP images
 Name:		gd
 Version:	2.0.35
-Release:	25
+Release:	26
 License:	BSD-style
 Group:		System/Libraries
 Url:		http://www.libgd.org/
