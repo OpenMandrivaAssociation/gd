@@ -1,21 +1,16 @@
-%define major	2
+%define major	3
 %define libname %mklibname %{name} %{major}
 %define devname %mklibname %{name} -d
 
 Summary:	A library used to create PNG, JPEG, or WBMP images
 Name:		gd
-Version:	2.0.35
-Release:	26
+Version:	2.1.0
+Release:	1
 License:	BSD-style
 Group:		System/Libraries
-Url:		http://www.libgd.org/
-Source0:	http://www.libgd.org/releases/%{name}-%{version}.tar.bz2
-Patch0:		gd-2.0.35-format_not_a_string_literal_and_no_format_arguments.diff
-Patch1:		0001_cvs20070904.patch
-Patch2:		0002_cvs20070916.patch
-Patch3:		gd-2.0.35-CVE-2009-3546.diff
-#It uses freetype2-devel, but uses the old library for gdttf
-BuildRequires:	freetype-devel
+Url:		http://libgd.bitbucket.org/
+Source0:	http://cdn.bitbucket.org/libgd/gd-libgd/downloads/libgd-%{version}.tar.xz
+Patch0:		gd-2.1.0-automake.patch
 BuildRequires:	gettext-devel
 BuildRequires:	jpeg-devel
 BuildRequires:	pkgconfig(fontconfig)
@@ -85,10 +80,8 @@ version 1.7.3 incorporates most of the commonly requested features for an 8-bit
 This package contains various utilities utilizing the gd library.
 
 %prep
-%setup -q
+%setup -q -n libgd-%{version}
 %apply_patches
-
-chmod a+r *.c *.h
 
 sed -i -e 's,AM_PROG_CC_STDC,AC_PROG_CC,g' configure.*
 libtoolize --force --copy
@@ -101,7 +94,7 @@ autoreconf -fi
 %make 
 
 %install
-%makeinstall
+%makeinstall_std
 
 sed -i -e 's!-Wl,--as-needed!!' -e 's!-Wl,--no-undefined!!' %{buildroot}%{_bindir}/gdlib-config
 
@@ -109,21 +102,20 @@ sed -i -e 's!-Wl,--as-needed!!' -e 's!-Wl,--no-undefined!!' %{buildroot}%{_bindi
 
 %multiarch_includes %{buildroot}%{_includedir}/gd.h
 
-install -m0644 gdhelpers.h %{buildroot}%{_includedir}/
+install -m0644 src/gdhelpers.h %{buildroot}%{_includedir}/
 
 %files -n %{libname}
 %{_libdir}/libgd.so.%{major}*
 
 %files -n %{devname}
-%doc index.html
 %{_bindir}/gdlib-config
 %{multiarch_bindir}/gdlib-config
 %{_libdir}/*.so
+%{_libdir}/pkgconfig/*.pc
 %{_includedir}/*.h
 %{multiarch_includedir}/*.h
 
 %files utils
-%doc README.TXT
 %{_bindir}/annotate
 %{_bindir}/bdftogd
 %{_bindir}/gd2copypal
