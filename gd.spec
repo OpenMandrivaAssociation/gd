@@ -4,13 +4,12 @@
 
 Summary:	A library used to create PNG, JPEG, or WBMP images
 Name:		gd
-Version:	2.1.0
-Release:	7
+Version:	2.2.4
+Release:	1
 License:	BSD-style
 Group:		System/Libraries
-Url:		http://libgd.bitbucket.org/
-Source0:	http://cdn.bitbucket.org/libgd/gd-libgd/downloads/libgd-%{version}.tar.xz
-Patch0:		gd-2.1.0-automake.patch
+Url:		http://libgd.org/
+Source0:	https://github.com/libgd/libgd/releases/download/gd-%{version}/libgd-%{version}.tar.xz
 BuildRequires:	gettext-devel
 BuildRequires:	jpeg-devel
 BuildRequires:	pkgconfig(fontconfig)
