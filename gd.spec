@@ -1,11 +1,11 @@
-%define major	3
+%define major 3
 %define libname %mklibname %{name} %{major}
 %define devname %mklibname %{name} -d
 
 Summary:	A library used to create PNG, JPEG, or WBMP images
 Name:		gd
-Version:	2.2.4
-Release:	2
+Version:	2.2.5
+Release:	1
 License:	BSD-style
 Group:		System/Libraries
 Url:		http://libgd.org/
@@ -87,7 +87,7 @@ libtoolize --force --copy
 autoreconf -fi
 
 %build
-%configure2_5x \
+%configure \
 	--disable-static
 
 %make 
@@ -121,4 +121,3 @@ install -m0644 src/gdhelpers.h %{buildroot}%{_includedir}/
 %{_bindir}/gd2togif
 %{_bindir}/gdcmpgif
 %{_bindir}/giftogd2
-
