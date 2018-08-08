@@ -5,7 +5,7 @@
 Summary:	A library used to create PNG, JPEG, or WBMP images
 Name:		gd
 Version:	2.2.5
-Release:	2
+Release:	3
 License:	BSD-style
 Group:		System/Libraries
 Url:		http://libgd.org/
@@ -18,6 +18,8 @@ BuildRequires:	pkgconfig(libpng)
 BuildRequires:	pkgconfig(x11)
 BuildRequires:	pkgconfig(xpm)
 BuildRequires:	pkgconfig(zlib)
+BuildRequires:	pkgconfig(libtiff-4)
+BuildRequires:	pkgconfig(libwebp)
 
 %description
 gd is a graphics library. It allows your code to quickly draw images complete
