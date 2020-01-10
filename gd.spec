@@ -92,7 +92,7 @@ This package contains various utilities utilizing the gd library.
 
 %prep
 %setup -q -n libgd-%{version}
-%apply_patches
+%autopatch -p1
 
 sed -i -e 's,AM_PROG_CC_STDC,AC_PROG_CC,g' configure.*
 libtoolize --force --copy
