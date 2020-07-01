@@ -1,15 +1,24 @@
+# gd is used by libgphoto, libgphoto is used by wine
+%ifarch %{x86_64}
+%bcond_without compat32
+%endif
+
 %define major 3
 %define libname %mklibname %{name} %{major}
 %define devname %mklibname %{name} -d
+%define lib32name %mklib32name %{name} %{major}
+%define dev32name %mklib32name %{name} -d
 
 Summary:	A library used to create PNG, JPEG, or WBMP images
 Name:		gd
-Version:	2.2.5
-Release:	5
+Version:	2.3.0
+Release:	1
 License:	BSD-style
 Group:		System/Libraries
 Url:		http://libgd.org/
 Source0:	https://github.com/libgd/libgd/releases/download/gd-%{version}/libgd-%{version}.tar.xz
+# Missing from the tarball, but needed by the build scripts
+Source1:	https://raw.githubusercontent.com/libgd/libgd/master/config/getlib.sh
 BuildRequires:	gettext-devel
 BuildRequires:	jpeg-devel
 BuildRequires:	pkgconfig(fontconfig)
@@ -20,6 +29,18 @@ BuildRequires:	pkgconfig(xpm)
 BuildRequires:	pkgconfig(zlib)
 BuildRequires:	pkgconfig(libtiff-4)
 BuildRequires:	pkgconfig(libwebp)
+%if %{with compat32}
+BuildRequires:	devel(libintl)
+BuildRequires:	devel(libjpeg)
+BuildRequires:	devel(libfontconfig)
+BuildRequires:	devel(libfreetype)
+BuildRequires:	devel(libpng16)
+BuildRequires:	devel(libX11)
+BuildRequires:	devel(libXpm)
+BuildRequires:	devel(libz)
+BuildRequires:	devel(libtiff)
+BuildRequires:	devel(libwebp)
+%endif
 
 %description
 gd is a graphics library. It allows your code to quickly draw images complete
@@ -90,24 +111,70 @@ version 1.7.3 incorporates most of the commonly requested features for an 8-bit
 
 This package contains various utilities utilizing the gd library.
 
+%if %{with compat32}
+%package -n	%{lib32name}
+Summary:	A library used to create PNG, JPEG, or WBMP images (32-bit)
+Group:		System/Libraries
+
+%description -n	%{lib32name}
+This package contains the library needed to run programs dynamically linked
+with libgd.
+
+%package -n	%{dev32name}
+Summary:	The development libraries and header files for gd (32-bit)
+Group:		Development/C
+Requires:	%{lib32name} = %{version}-%{release}
+Requires:	%{devname} = %{version}-%{release}
+
+%description -n	%{dev32name}
+These are the development libraries and header files for gd, the .png and .jpeg
+graphics library. If you're installing the gd graphics library, you'll probably
+want to install gd-devel.
+%endif
+
 %prep
 %setup -q -n libgd-%{version}
 %autopatch -p1
+
+if [ -e config/getlib.sh ]; then
+	echo "Missing file in tarballs has been fixed, please"
+	echo "remove the workaround in the spec."
+	exit 1
+else
+	cp %{S:1} config/
+	chmod 0755 config/$(basename %{S:1})
+fi
 
 sed -i -e 's,AM_PROG_CC_STDC,AC_PROG_CC,g' configure.*
 libtoolize --force --copy
 autoreconf -fi
 
-%build
-%configure \
-	--disable-static
+export CONFIGURE_TOP="$(pwd)"
 
-%make 
+%if %{with compat32}
+mkdir build32
+cd build32
+#ln -s ../config .
+%configure32 --disable-static
+cd ..
+%endif
+
+mkdir build
+cd build
+#ln -s ../config .
+%configure
+
+%build
+%if %{with compat32}
+%make_build -C build32
+%endif
+%make_build -C build
 
 %install
-%makeinstall_std
-
-sed -i -e 's!-Wl,--as-needed!!' -e 's!-Wl,--no-undefined!!' %{buildroot}%{_bindir}/gdlib-config
+%if %{with compat32}
+%make_install -C build32
+%endif
+%make_install -C build
 
 install -m0644 src/gdhelpers.h %{buildroot}%{_includedir}/
 
@@ -115,7 +182,6 @@ install -m0644 src/gdhelpers.h %{buildroot}%{_includedir}/
 %{_libdir}/libgd.so.%{major}*
 
 %files -n %{devname}
-%{_bindir}/gdlib-config
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/*.pc
 %{_includedir}/*.h
@@ -133,3 +199,12 @@ install -m0644 src/gdhelpers.h %{buildroot}%{_includedir}/
 %{_bindir}/gd2togif
 %{_bindir}/gdcmpgif
 %{_bindir}/giftogd2
+
+%if %{with compat32}
+%files -n %{lib32name}
+%{_prefix}/lib/libgd.so.%{major}*
+
+%files -n %{dev32name}
+%{_prefix}/lib/*.so
+%{_prefix}/lib/pkgconfig/*.pc
+%endif
