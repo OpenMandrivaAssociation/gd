@@ -11,14 +11,12 @@
 
 Summary:	A library used to create PNG, JPEG, or WBMP images
 Name:		gd
-Version:	2.3.0
-Release:	2
+Version:	2.3.2
+Release:	1
 License:	BSD-style
 Group:		System/Libraries
 Url:		http://libgd.org/
 Source0:	https://github.com/libgd/libgd/releases/download/gd-%{version}/libgd-%{version}.tar.xz
-# Missing from the tarball, but needed by the build scripts
-Source1:	https://raw.githubusercontent.com/libgd/libgd/master/config/getlib.sh
 BuildRequires:	gettext-devel
 BuildRequires:	pkgconfig(libjpeg)
 BuildRequires:	pkgconfig(fontconfig)
@@ -51,7 +49,7 @@ of the formats accepted for inlineimages by most browsers.
 
 gd is not a paint program. If you are looking for a paint program, you are
 looking in the wrong place. If you are not a programmer, you are looking in the
-wrong place. 
+wrong place.
 
 gd does not provide for every possible desirable graphics operation. It is not
 necessary or desirable for gd to become a kitchen-sink graphics package, but
@@ -102,7 +100,7 @@ of the formats accepted for inlineimages by most browsers.
 
 gd is not a paint program. If you are looking for a paint program, you are
 looking in the wrong place. If you are not a programmer, you are looking in the
-wrong place. 
+wrong place.
 
 gd does not provide for every possible desirable graphics operation. It is not
 necessary or desirable for gd to become a kitchen-sink graphics package, but
@@ -135,15 +133,6 @@ want to install gd-devel.
 %prep
 %setup -q -n libgd-%{version}
 %autopatch -p1
-
-if [ -e config/getlib.sh ]; then
-	echo "Missing file in tarballs has been fixed, please"
-	echo "remove the workaround in the spec."
-	exit 1
-else
-	cp %{S:1} config/
-	chmod 0755 config/$(basename %{S:1})
-fi
 
 sed -i -e 's,AM_PROG_CC_STDC,AC_PROG_CC,g' configure.*
 libtoolize --force --copy
