@@ -12,7 +12,7 @@
 Summary:	A library used to create PNG, JPEG, or WBMP images
 Name:		gd
 Version:	2.3.2
-Release:	1
+Release:	2
 License:	BSD-style
 Group:		System/Libraries
 Url:		http://libgd.org/
@@ -131,8 +131,7 @@ want to install gd-devel.
 %endif
 
 %prep
-%setup -q -n libgd-%{version}
-%autopatch -p1
+%autosetup -n libgd-%{version} -p1
 
 sed -i -e 's,AM_PROG_CC_STDC,AC_PROG_CC,g' configure.*
 libtoolize --force --copy
