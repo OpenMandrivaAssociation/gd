@@ -11,12 +11,15 @@
 
 Summary:	A library used to create PNG, JPEG, or WBMP images
 Name:		gd
-Version:	2.3.2
-Release:	2
+Version:	2.3.3
+Release:	1
 License:	BSD-style
 Group:		System/Libraries
 Url:		http://libgd.org/
 Source0:	https://github.com/libgd/libgd/releases/download/gd-%{version}/libgd-%{version}.tar.xz
+Patch0:		https://src.fedoraproject.org/rpms/gd/raw/rawhide/f/libgd-flip.patch
+Patch1:		https://src.fedoraproject.org/rpms/gd/raw/rawhide/f/libgd-iostream.patch
+
 BuildRequires:	gettext-devel
 BuildRequires:	pkgconfig(libjpeg)
 BuildRequires:	pkgconfig(fontconfig)
@@ -56,29 +59,28 @@ necessary or desirable for gd to become a kitchen-sink graphics package, but
 version 1.7.3 incorporates most of the commonly requested features for an 8-bit
 2D package.
 
-%package -n	%{libname}
+%package -n %{libname}
 Summary:	A library used to create PNG, JPEG, or WBMP images
 Group:		System/Libraries
 Provides:	%{name} = %{version}-%{release}
 
-%description -n	%{libname}
+%description -n %{libname}
 This package contains the library needed to run programs dynamically linked
 with libgd.
 
-%package -n	%{devname}
+%package -n %{devname}
 Summary:	The development libraries and header files for gd
 Group:		Development/C
 Requires:	%{libname} = %{version}-%{release}
-Requires:  pkgconfig(libjpeg)
-Requires:  pkgconfig(fontconfig)
-Requires:  pkgconfig(freetype2)
-Requires:  pkgconfig(libpng)
-Requires:  pkgconfig(x11)
-Requires:  pkgconfig(xpm)
-Requires:  pkgconfig(zlib)
-Requires:  pkgconfig(libtiff-4)
-Requires:  pkgconfig(libwebp)
-
+Requires:	pkgconfig(libjpeg)
+Requires:	pkgconfig(fontconfig)
+Requires:	pkgconfig(freetype2)
+Requires:	pkgconfig(libpng)
+Requires:	pkgconfig(x11)
+Requires:	pkgconfig(xpm)
+Requires:	pkgconfig(zlib)
+Requires:	pkgconfig(libtiff-4)
+Requires:	pkgconfig(libwebp)
 Provides:	%{name}-devel = %{version}-%{release}
 
 %description -n	%{devname}
@@ -86,12 +88,12 @@ These are the development libraries and header files for gd, the .png and .jpeg
 graphics library. If you're installing the gd graphics library, you'll probably
 want to install gd-devel.
 
-%package	utils
+%package utils
 Requires:	%{libname} = %{version}
 Summary:	The Utils files for gd
 Group:		System/Libraries
 
-%description	utils
+%description utils
 gd is a graphics library. It allows your code to quickly draw images complete
 with lines, arcs, text, multiple colors, cut and paste from other images, and
 flood fills, and write out the result as a PNG or JPEG file. This is
@@ -110,21 +112,21 @@ version 1.7.3 incorporates most of the commonly requested features for an 8-bit
 This package contains various utilities utilizing the gd library.
 
 %if %{with compat32}
-%package -n	%{lib32name}
+%package -n %{lib32name}
 Summary:	A library used to create PNG, JPEG, or WBMP images (32-bit)
 Group:		System/Libraries
 
-%description -n	%{lib32name}
+%description -n %{lib32name}
 This package contains the library needed to run programs dynamically linked
 with libgd.
 
-%package -n	%{dev32name}
+%package -n %{dev32name}
 Summary:	The development libraries and header files for gd (32-bit)
 Group:		Development/C
 Requires:	%{lib32name} = %{version}-%{release}
 Requires:	%{devname} = %{version}-%{release}
 
-%description -n	%{dev32name}
+%description -n %{dev32name}
 These are the development libraries and header files for gd, the .png and .jpeg
 graphics library. If you're installing the gd graphics library, you'll probably
 want to install gd-devel.
