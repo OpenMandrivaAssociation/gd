@@ -119,18 +119,22 @@ diff -up libgd-2.3.3/src/gd_tiff.c.omv~ libgd-2.3.3/src/gd_tiff.c
 diff -up libgd-2.3.3/src/gd_tiff.c.omv~ libgd-2.3.3/src/gd_tiff.c
 --- libgd-2.3.3/src/gd_tiff.c.omv~	2023-04-28 19:17:54.596160900 +0200
 +++ libgd-2.3.3/src/gd_tiff.c	2023-04-28 19:20:31.667599629 +0200
-@@ -951,8 +951,14 @@ BGD_DECLARE(gdImagePtr) gdImageCreateFro
+@@ -951,8 +951,18 @@ BGD_DECLARE(gdImagePtr) gdImageCreateFro
  		image_type = GD_RGB;
  	}
  
 +// False positive with gcc 13.1
 +// It thinks image_type can be uninitialized, but that
 +// can't actually happen
++#ifndef __clang__
 +#pragma GCC diagnostic push
 +#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
++#endif
  	if (!force_rgba &&
  	        (image_type == GD_PALETTE || image_type == GD_INDEXED || image_type == GD_GRAY)) {
++#ifndef __clang__
 +#pragma GCC diagnostic pop
++#endif
  		im = gdImageCreate(width, height);
  		if (!im) goto error;
  		readTiffColorMap(im, tif, is_bw, photometric);
