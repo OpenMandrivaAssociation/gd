@@ -62,6 +62,7 @@ Patch39:	0040-Fix-847-enable-back-GD_BICUBIC-interpolation-methods.patch
 Patch500:	gd-2.3.3-clang16-gcc13.patch
 
 BuildRequires:	gettext-devel
+BuildRequires:	git-core
 BuildRequires:	pkgconfig(libjpeg)
 BuildRequires:	pkgconfig(fontconfig)
 BuildRequires:	pkgconfig(freetype2)
