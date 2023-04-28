@@ -1,0 +1,379 @@
+From 28026e8983b4154b930e9f50184b90310fb0d874 Mon Sep 17 00:00:00 2001
+From: Pierre Joye <pierre.php@gmail.com>
+Date: Tue, 1 Feb 2022 15:09:01 +0700
+Subject: [PATCH 32/40] Fix tests based on coverity reports (#819)
+
+* Partial #818, unused arg
+
+* Partial #818, init var
+
+* partail #818, fix va_args usage
+
+* partail #818, handle f* calls and avoid possible call to malloc with negative values
+
+* partail #818, prevent double free
+
+* partail #818, resource leak if test fail
+
+* partail #818, null deref fix
+
+* partail #818, avoid double free on fp failure
+
+* Partial #818, fix error msg
+
+* Partial #818, leak on error
+
+* Partial #818, null deref
+
+* Partial #818, avoid possible negative index on failure
+
+* partial #818, does not free if we return if requested new size overflow
+
+* partial #818, avoid double free, free where the alloc happened
+---
+ examples/nnquant.c                          |  5 ++-
+ src/gd.c                                    |  6 ++--
+ tests/gd2/gd2_read.c                        |  5 ++-
+ tests/gd2/gd2_read_corrupt.c                |  2 +-
+ tests/gdimagecolorexact/gdimagecolorexact.c | 34 ++++++++++-----------
+ tests/gdimagefill/bug00002_1.c              |  5 +--
+ tests/gdimagescatterex/bug00208_2.c         |  2 +-
+ tests/gdtest/gdtest.c                       | 15 +++++++--
+ tests/tga/bug00084.c                        |  8 ++++-
+ tests/tga/heap_overflow.c                   |  4 ++-
+ tests/tiff/tiff_invalid_read.c              | 16 ++++++----
+ 11 files changed, 62 insertions(+), 40 deletions(-)
+
+diff --git a/examples/nnquant.c b/examples/nnquant.c
+index 82e36729..5ce104ed 100644
+--- a/examples/nnquant.c
++++ b/examples/nnquant.c
+@@ -18,18 +18,17 @@ int main()
+ {
+ 	gdImagePtr im, im2;
+ 	FILE *fp;
+-	char path[2048];
+ 
+ 	fp=fopen("resampledbug.jpeg", "rb");
+ 	if (!fp) {
+-		fprintf(stderr, "Can't load /home/pierre/IM3801.jpg\n");
++		fprintf(stderr, "Can't load resampledbug.jpeg\n");
+ 		return 1;
+ 	}
+ 
+ 	im = gdImageCreateFromJpeg(fp);
+ 	fclose(fp);
+ 	if (!im) {
+-		fprintf(stderr, "Can't load TIFF image %s\n", path);
++		fprintf(stderr, "Can't decode JPEG image resampledbug.jpeg\n");
+ 		return 1;
+ 	}
+ 
+diff --git a/src/gd.c b/src/gd.c
+index 7d174e4a..21f1674f 100644
+--- a/src/gd.c
++++ b/src/gd.c
+@@ -3812,12 +3812,12 @@ static void gdImageSetAAPixelColor(gdImagePtr im, int x, int y, int color, int t
+  */
+ BGD_DECLARE(void) gdImageSetStyle (gdImagePtr im, int *style, int noOfPixels)
+ {
+-	if (im->style) {
+-		gdFree (im->style);
+-	}
+ 	if (overflow2(sizeof (int), noOfPixels)) {
+ 		return;
+ 	}
++	if (im->style) {
++		gdFree (im->style);
++	}
+ 	im->style = (int *) gdMalloc (sizeof (int) * noOfPixels);
+ 	if (!im->style) {
+ 		return;
+diff --git a/tests/gd2/gd2_read.c b/tests/gd2/gd2_read.c
+index 9f2b8082..be625c3b 100644
+--- a/tests/gd2/gd2_read.c
++++ b/tests/gd2/gd2_read.c
+@@ -3,7 +3,7 @@
+ #include <stdlib.h>
+ #include "gdtest.h"
+ 
+-int main(int argc, char *argv[])
++int main()
+ {
+ 	int error = 0, i = 0;
+ 	gdImagePtr im, exp;
+@@ -27,6 +27,9 @@ int main(int argc, char *argv[])
+ 			return 1;
+ 		}
+ 		im = gdImageCreateFromGd2(fp);
++		if (gdTestAssert(im == NULL)) {
++			gdTestErrorMsg("failed, cannot decode file: %s\n", path[0]);
++		}
+ 		fclose(fp);
+ 
+ 		if (path_exp[i] != NULL) {
+diff --git a/tests/gd2/gd2_read_corrupt.c b/tests/gd2/gd2_read_corrupt.c
+index 7afc3039..a6363165 100644
+--- a/tests/gd2/gd2_read_corrupt.c
++++ b/tests/gd2/gd2_read_corrupt.c
+@@ -4,7 +4,7 @@
+ #include <stdlib.h>
+ #include "gdtest.h"
+ 
+-int main(int argc, char *argv[])
++int main()
+ {
+ 	gdImagePtr im;
+ 	FILE *fp;
+diff --git a/tests/gdimagecolorexact/gdimagecolorexact.c b/tests/gdimagecolorexact/gdimagecolorexact.c
+index 9d754ca9..e127b842 100644
+--- a/tests/gdimagecolorexact/gdimagecolorexact.c
++++ b/tests/gdimagecolorexact/gdimagecolorexact.c
+@@ -30,34 +30,32 @@ int main()
+ 	c3 = gdImageColorExactAlpha(im, 255, 0, 255, 100);
+ 	c4 = gdImageColorExactAlpha(im, 255, 34, 255, 100);
+ 
++
+ 	if (gdTestAssert(c1 == 0) != 1) {
+-		error = -1;
++		color = gdTrueColorAlpha(gdImageRed(im, c1), gdImageGreen(im, c1),
++								gdImageBlue(im, c1), 0);
++		if (gdTestAssert(color == 0xFF00FF) != 1) {
++			error = -1;
++		}
+ 	}
+ 	if (gdTestAssert(c2 == 1) != 1) {
+-		error = -1;
++		color = gdTrueColorAlpha(gdImageRed(im, c2), gdImageGreen(im, c2),
++								gdImageBlue(im, c2), 0);
++		if (gdTestAssert(color == 0xFFC800) != 1) {
++			error = -1;
++		}
+ 	}
+ 	if (gdTestAssert(c3 == 2) != 1) {
+-		error = -1;
++		color = gdTrueColorAlpha(gdImageRed(im, c3), gdImageGreen(im, c3),
++								gdImageBlue(im, c3), 0);
++		if (gdTestAssert(color == 0xFF00FF) != 1) {
++			error = -1;
++		}
+ 	}
+ 	if (gdTestAssert(c4 == -1) != 1) {
+ 		error = -1;
+ 	}
+ 
+-	color = gdTrueColorAlpha(gdImageRed(im, c1), gdImageGreen(im, c1),
+-	                         gdImageBlue(im, c1), 0);
+-	if (gdTestAssert(color == 0xFF00FF) != 1) {
+-		error = -1;
+-	}
+-	color = gdTrueColorAlpha(gdImageRed(im, c2), gdImageGreen(im, c2),
+-	                         gdImageBlue(im, c2), 0);
+-	if (gdTestAssert(color == 0xFFC800) != 1) {
+-		error = -1;
+-	}
+-	color = gdTrueColorAlpha(gdImageRed(im, c3), gdImageGreen(im, c3),
+-	                         gdImageBlue(im, c3), 0);
+-	if (gdTestAssert(color == 0xFF00FF) != 1) {
+-		error = -1;
+-	}
+ 	gdImageDestroy(im);
+ 
+ 	return error;
+diff --git a/tests/gdimagefill/bug00002_1.c b/tests/gdimagefill/bug00002_1.c
+index 3a66d7ba..d348f0b4 100644
+--- a/tests/gdimagefill/bug00002_1.c
++++ b/tests/gdimagefill/bug00002_1.c
+@@ -21,13 +21,14 @@ int main()
+ 
+ 	file = gdTestTempFile("bug00002_1.png");
+ 	fp = fopen(file, "wb");
+-	free(file);
++
+ 	if (fp == NULL) {
+ 		gdTestErrorMsg("Cannot create image from <%s>\n", file);
++		free(file);
+ 		gdImageDestroy(im);
+ 		return 1;
+ 	}
+-
++	free(file);
+ 	gdImagePng(im,fp);
+ 	fclose(fp);
+ 
+diff --git a/tests/gdimagescatterex/bug00208_2.c b/tests/gdimagescatterex/bug00208_2.c
+index 58c1382b..8c3df286 100644
+--- a/tests/gdimagescatterex/bug00208_2.c
++++ b/tests/gdimagescatterex/bug00208_2.c
+@@ -7,7 +7,7 @@ int main()
+ 	FILE *fp;
+ 	gdScatter s;
+ 	int colors[] = {0xFF0000, 0x00FF00};
+-	CuTestImageResult r;
++	CuTestImageResult r = {0,0};
+ 
+ 	fp = gdTestFileOpen("gdimagescatterex/bug00208.png");
+ 	im = gdImageCreateFromPng(fp);
+diff --git a/tests/gdtest/gdtest.c b/tests/gdtest/gdtest.c
+index 69efda05..72b37583 100644
+--- a/tests/gdtest/gdtest.c
++++ b/tests/gdtest/gdtest.c
+@@ -396,6 +396,7 @@ FILE *gdTestTempFp(void)
+ 	FILE *fp = fopen(file, "wb");
+ 	if (fp == NULL) {
+ 		printf("fail to open tmp file");
++		free(file);
+ 		return NULL;
+ 	}
+ 	free(file);
+@@ -425,6 +426,7 @@ char *gdTestFilePathV(const char *path, va_list args)
+ 		return NULL;
+ 	}
+ 	strcpy(file, GDTEST_TOP_DIR);
++
+ 	p = path;
+ 	do {
+ #if defined(_WIN32) && !defined(__MINGW32__) &&  !defined(__MINGW64__)
+@@ -435,7 +437,6 @@ char *gdTestFilePathV(const char *path, va_list args)
+ 		strcat(file, p);
+ 
+ 	} while ((p = va_arg(args, const char *)) != NULL);
+-	va_end(args);
+ 
+ 	return file;
+ }
+@@ -443,8 +444,11 @@ char *gdTestFilePathV(const char *path, va_list args)
+ char *gdTestFilePathX(const char *path, ...)
+ {
+ 	va_list args;
++	char *res;
+ 	va_start(args, path);
+-	return gdTestFilePathV(path, args);
++	res = gdTestFilePathV(path, args);
++	va_end(args);
++	return res;
+ }
+ 
+ FILE *gdTestFileOpenX(const char *path, ...)
+@@ -458,9 +462,12 @@ FILE *gdTestFileOpenX(const char *path, ...)
+ 	fp = fopen(file, "rb");
+ 	if (fp == NULL) {
+ 		printf("failed to open path (rb).");
++		free(file);
++		va_end(args);
+ 		return NULL;
+ 	}
+ 	free(file);
++	va_end(args);
+ 	return fp;
+ }
+ 
+@@ -606,6 +613,7 @@ int gdTestImageCompareToImage(const char* file, unsigned int line, const char* m
+ 	}
+ 
+ 	surface_diff = gdImageCreateTrueColor(width_a, height_a);
++	if (surface_diff == NULL) goto fail;
+ 
+ 	gdTestImageDiff(expected, actual, surface_diff, &result);
+ 	if (result.pixels_changed>0) {
+@@ -636,7 +644,7 @@ int gdTestImageCompareToImage(const char* file, unsigned int line, const char* m
+ 		gdImagePng(surface_diff,fp);
+ 		fclose(fp);
+ 		gdImageDestroy(surface_diff);
+-
++		surface_diff = NULL;
+ 		fp = fopen(file_out, "wb");
+ 		if (!fp) goto fail;
+ 		gdImagePng(actual, fp);
+@@ -645,6 +653,7 @@ int gdTestImageCompareToImage(const char* file, unsigned int line, const char* m
+ 	} else {
+ 		if (surface_diff) {
+ 			gdImageDestroy(surface_diff);
++			surface_diff = NULL;
+ 		}
+ 		return 1;
+ 	}
+diff --git a/tests/tga/bug00084.c b/tests/tga/bug00084.c
+index 7d4ca924..3cf07100 100644
+--- a/tests/tga/bug00084.c
++++ b/tests/tga/bug00084.c
+@@ -7,7 +7,13 @@ int main()
+ {
+     gdImagePtr im;
+     FILE *fp = gdTestFileOpen("tga/bug00084.tga");
++    if (gdTestAssert(fp == NULL)) {
++        return 1;
++    }
+     im = gdImageCreateFromTga(fp);
+-	gdImageDestroy(im);
++    fclose(fp);
++    if (gdTestAssert(im != NULL)) {
++        gdImageDestroy(im);
++    }
+     return 0;
+ }
+diff --git a/tests/tga/heap_overflow.c b/tests/tga/heap_overflow.c
+index ddd4b63e..119eb232 100644
+--- a/tests/tga/heap_overflow.c
++++ b/tests/tga/heap_overflow.c
+@@ -28,7 +28,9 @@ static void check_file(char *basename)
+ 
+     size = read_test_file(&buffer, basename);
+     im = gdImageCreateFromTgaPtr(size, (void *) buffer);
+-    gdTestAssert(im == NULL);
++    if (!gdTestAssert(im == NULL)) {
++        gdImageDestroy(im);
++    }
+     free(buffer);
+ }
+ 
+diff --git a/tests/tiff/tiff_invalid_read.c b/tests/tiff/tiff_invalid_read.c
+index bed53891..7acf7cf9 100644
+--- a/tests/tiff/tiff_invalid_read.c
++++ b/tests/tiff/tiff_invalid_read.c
+@@ -25,13 +25,15 @@ int main()
+ static void check_file(char *basename)
+ {
+     gdImagePtr im;
+-    char *buffer;
++    char *buffer = NULL;
+     size_t size;
+ 
+     size = read_test_file(&buffer, basename);
+     im = gdImageCreateFromTiffPtr(size, (void *) buffer);
+     gdTestAssert(im == NULL);
+-    free(buffer);
++    if (buffer != NULL) {
++        free(buffer);
++    }
+ }
+ 
+ 
+@@ -43,18 +45,20 @@ static size_t read_test_file(char **buffer, char *basename)
+ 
+     filename = gdTestFilePath2("tiff", basename);
+     fp = fopen(filename, "rb");
+-    gdTestAssert(fp != NULL);
++    if (gdTestAssert(fp != NULL)) goto fail3;
+ 
+-	fseek(fp, 0, SEEK_END);
++	if (fseek(fp, 0, SEEK_END) != 0) goto fail2;
+ 	exp_size = ftell(fp);
+-	fseek(fp, 0, SEEK_SET);
++	if (fseek(fp, 0, SEEK_SET) != 0) goto fail2;
+ 
+     *buffer = malloc(exp_size);
+-    gdTestAssert(*buffer != NULL);
++    if (gdTestAssert(*buffer != NULL)) goto fail2;
+     act_size = fread(*buffer, sizeof(**buffer), exp_size, fp);
+     gdTestAssert(act_size == exp_size);
+ 
++fail2:
+     fclose(fp);
++fail3:
+     free(filename);
+ 
+     return act_size;
+-- 
+2.40.1
+

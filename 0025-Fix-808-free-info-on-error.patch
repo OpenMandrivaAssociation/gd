@@ -1,0 +1,36 @@
+From 15d52192328583df27d58cf4b58388f5eab993ae Mon Sep 17 00:00:00 2001
+From: Pierre Joye <pierre.php@gmail.com>
+Date: Sun, 30 Jan 2022 10:35:27 +0700
+Subject: [PATCH 25/40] Fix 808, free info on error
+
+---
+ src/gdft.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/src/gdft.c b/src/gdft.c
+index 1a38bcde..2841704e 100644
+--- a/src/gdft.c
++++ b/src/gdft.c
+@@ -1433,6 +1433,9 @@ BGD_DECLARE(char *) gdImageStringFTEx (gdImagePtr im, int *brect, int fg, const
+ 					gdFree(text);
+ 					gdCacheDelete (tc_cache);
+ 					gdMutexUnlock (gdFontCacheMutex);
++					if (info) {
++						gdFree(info);
++					}
+ 					return "Problem allocating memory";
+ 				}
+ 				xshow_pos = 0;
+@@ -1445,6 +1448,9 @@ BGD_DECLARE(char *) gdImageStringFTEx (gdImagePtr im, int *brect, int fg, const
+ 					gdFree(text);
+ 					gdCacheDelete (tc_cache);
+ 					gdMutexUnlock (gdFontCacheMutex);
++					if (info) {
++						gdFree(info);
++					}
+ 					return "Problem allocating memory";
+ 				}
+ 			}
+-- 
+2.40.1
+

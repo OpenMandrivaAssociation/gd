@@ -1,0 +1,47 @@
+From 0f046d341de4c4897bd9d97db822987388187839 Mon Sep 17 00:00:00 2001
+From: Pierre Joye <pierre.php@gmail.com>
+Date: Sun, 30 Jan 2022 11:02:37 +0700
+Subject: [PATCH 27/40] Fix #808, free info. Not sure what happens, it keeps
+ being removed on cherry-pick to 2.3....
+
+---
+ src/gdft.c | 9 +++------
+ 1 file changed, 3 insertions(+), 6 deletions(-)
+
+diff --git a/src/gdft.c b/src/gdft.c
+index 83f3a3e0..4cd2ae37 100644
+--- a/src/gdft.c
++++ b/src/gdft.c
+@@ -1433,9 +1433,7 @@ BGD_DECLARE(char *) gdImageStringFTEx (gdImagePtr im, int *brect, int fg, const
+ 					gdFree(text);
+ 					gdCacheDelete (tc_cache);
+ 					gdMutexUnlock (gdFontCacheMutex);
+-					if (info) {
+-						gdFree(info);
+-					}
++					gdFree(info);
+ 					return "Problem allocating memory";
+ 				}
+ 				xshow_pos = 0;
+@@ -1448,9 +1446,7 @@ BGD_DECLARE(char *) gdImageStringFTEx (gdImagePtr im, int *brect, int fg, const
+ 					gdFree(text);
+ 					gdCacheDelete (tc_cache);
+ 					gdMutexUnlock (gdFontCacheMutex);
+-					if (info) {
+-						gdFree(info);
+-					}
++					gdFree(info);
+ 					return "Problem allocating memory";
+ 				}
+ 			}
+@@ -1467,6 +1463,7 @@ BGD_DECLARE(char *) gdImageStringFTEx (gdImagePtr im, int *brect, int fg, const
+ 			gdFree(text);
+ 			gdCacheDelete (tc_cache);
+ 			gdMutexUnlock (gdFontCacheMutex);
++			gdFree(info);
+ 			return "Problem loading glyph";
+ 		}
+ 
+-- 
+2.40.1
+

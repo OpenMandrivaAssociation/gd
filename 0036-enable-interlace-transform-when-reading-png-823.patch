@@ -1,0 +1,28 @@
+From 3574cdba7c9fc65a28d99c9dd00495658c601fe7 Mon Sep 17 00:00:00 2001
+From: Brett <6075681+developerbmw@users.noreply.github.com>
+Date: Mon, 7 Feb 2022 18:57:24 +1300
+Subject: [PATCH 36/40] enable interlace transform when reading png (#823)
+
+---
+ src/gd_png.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/src/gd_png.c b/src/gd_png.c
+index 428a0201..e2311882 100644
+--- a/src/gd_png.c
++++ b/src/gd_png.c
+@@ -410,6 +410,11 @@ BGD_DECLARE(gdImagePtr) gdImageCreateFromPngCtx (gdIOCtx * infile)
+ 		goto error;
+ 	}
+ 
++	/* enable the interlace transform if supported */
++#ifdef PNG_READ_INTERLACING_SUPPORTED
++	(void)png_set_interlace_handling(png_ptr);
++#endif
++
+ 	png_read_update_info (png_ptr, info_ptr);
+ 
+ 	/* allocate space for the PNG image data */
+-- 
+2.40.1
+

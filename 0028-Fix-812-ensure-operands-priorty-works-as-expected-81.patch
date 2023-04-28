@@ -1,0 +1,32 @@
+From 9b40ca46b6430e39f29e84a0a1b8686ea375c2d8 Mon Sep 17 00:00:00 2001
+From: Pierre Joye <pierre.php@gmail.com>
+Date: Sun, 30 Jan 2022 11:04:28 +0700
+Subject: [PATCH 28/40] Fix #812, ensure operands priorty works as expected
+ (#813)
+
+---
+ src/gd_interpolation.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/src/gd_interpolation.c b/src/gd_interpolation.c
+index 11c24469..1f625dd2 100644
+--- a/src/gd_interpolation.c
++++ b/src/gd_interpolation.c
+@@ -1996,10 +1996,10 @@ static int getPixelRgbInterpolated(gdImagePtr im, const int tcolor)
+ 	int ct;
+ 	int i;
+ 
+-	b = (unsigned char)tcolor;
+-	g = (unsigned char)tcolor >> 8;
+-	r = (unsigned char)tcolor >> 16;
+-	a = (unsigned char)tcolor >> 24;
++	b = (unsigned char)(tcolor);
++	g = (unsigned char)(tcolor >> 8);
++	r = (unsigned char)(tcolor >> 16);
++	a = (unsigned char)(tcolor >> 24);
+ 
+ 	for (i = 0; i < im->colorsTotal; i++) {
+ 		if (im->red[i] == r && im->green[i] == g && im->blue[i] == b && im->alpha[i] == a) {
+-- 
+2.40.1
+

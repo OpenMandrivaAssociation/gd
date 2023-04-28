@@ -1,0 +1,52 @@
+From 3eff74e89d46821b24b8d2573f4895150c2e36f9 Mon Sep 17 00:00:00 2001
+From: Mike Frysinger <vapier@gentoo.org>
+Date: Sun, 28 Aug 2022 18:43:11 -0400
+Subject: [PATCH 38/40] configure: add log when we check config scripts
+
+This should make it more obvious when we aren't probing for the libs
+and headers directy ourselves.
+
+Closes #841.
+
+(cherry picked from commit 946088ca0735c2040961b323c363851803eb4206)
+---
+ configure.ac | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/configure.ac b/configure.ac
+index 9848b656..74536721 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -204,10 +204,14 @@ GD_LIB_PKG_CHECK([LIBZ], [ZLIB], [zlib], [zlib], [dnl
+ dnl Check for libpng support.
+ GD_LIB_PKG_CHECK([LIBPNG], [PNG], [png], [libpng], [
+   LIBPNG_CONFIG=$gd_with_lib/bin/libpng-config
++  AC_MSG_CHECKING([for $LIBPNG_CONFIG script])
+   if test -e "$LIBPNG_CONFIG"; then
+     LIBPNG_CFLAGS=`$LIBPNG_CONFIG --cflags`
+     LIBPNG_LIBS=`$LIBPNG_CONFIG --ldflags`
++    AC_MSG_RESULT(yes)
+     gd_found_lib=yes
++  else
++    AC_MSG_RESULT(no)
+   fi
+ ])
+ 
+@@ -215,10 +219,14 @@ dnl Check for FreeType support.
+ dnl NB: "9.8.3" corresponds to freetype-2.1.10.
+ GD_LIB_PKG_CHECK([LIBFREETYPE], [FREETYPE], [freetype], [freetype2 >= 9.8.3], [
+   FREETYPE_CONFIG=$gd_with_lib/bin/freetype-config
++  AC_MSG_CHECKING([for $FREETYPE_CONFIG script])
+   if test -e "$FREETYPE_CONFIG"; then
+     LIBFREETYPE_CFLAGS=`$FREETYPE_CONFIG --cflags`
+     LIBFREETYPE_LIBS=`$FREETYPE_CONFIG --libs`
++    AC_MSG_RESULT(yes)
+     gd_found_lib=yes
++  else
++    AC_MSG_RESULT(no)
+   fi
+ ])
+ if test "$gd_with_LIBFREETYPE" = "yes"; then
+-- 
+2.40.1
+

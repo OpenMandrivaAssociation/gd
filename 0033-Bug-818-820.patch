@@ -1,0 +1,110 @@
+From e8a5bf6aaf5b194b8e669a16678e3f5af538ef3c Mon Sep 17 00:00:00 2001
+From: Pierre Joye <pierre.php@gmail.com>
+Date: Tue, 1 Feb 2022 17:37:49 +0700
+Subject: [PATCH 33/40] Bug/818 (#820)
+
+* Partial #818, unused arg
+
+* Partial #818, init var
+
+* partail #818, fix va_args usage
+
+* partail #818, handle f* calls and avoid possible call to malloc with negative values
+
+* partail #818, prevent double free
+
+* partail #818, resource leak if test fail
+
+* partail #818, null deref fix
+
+* partail #818, avoid double free on fp failure
+
+* Partial #818, fix error msg
+
+* Partial #818, leak on error
+
+* Partial #818, null deref
+
+* Partial #818, avoid possible negative index on failure
+
+* partial #818, does not free if we return if requested new size overflow
+
+* partial #818, avoid double free, free where the alloc happened
+
+* partial #818, fix assert logic and test exp_size for <=0
+
+* partial #818, fix assert logic for color idx test
+---
+ tests/gdimagecolorexact/gdimagecolorexact.c | 10 +++++-----
+ tests/tiff/tiff_invalid_read.c              | 11 +++++++----
+ 2 files changed, 12 insertions(+), 9 deletions(-)
+
+diff --git a/tests/gdimagecolorexact/gdimagecolorexact.c b/tests/gdimagecolorexact/gdimagecolorexact.c
+index e127b842..54698df9 100644
+--- a/tests/gdimagecolorexact/gdimagecolorexact.c
++++ b/tests/gdimagecolorexact/gdimagecolorexact.c
+@@ -30,29 +30,29 @@ int main()
+ 	c3 = gdImageColorExactAlpha(im, 255, 0, 255, 100);
+ 	c4 = gdImageColorExactAlpha(im, 255, 34, 255, 100);
+ 
+-
+-	if (gdTestAssert(c1 == 0) != 1) {
++	if (gdTestAssert(c1 == 0)) {
+ 		color = gdTrueColorAlpha(gdImageRed(im, c1), gdImageGreen(im, c1),
+ 								gdImageBlue(im, c1), 0);
+ 		if (gdTestAssert(color == 0xFF00FF) != 1) {
+ 			error = -1;
+ 		}
+ 	}
+-	if (gdTestAssert(c2 == 1) != 1) {
++
++	if (gdTestAssert(c2 == 1)) {
+ 		color = gdTrueColorAlpha(gdImageRed(im, c2), gdImageGreen(im, c2),
+ 								gdImageBlue(im, c2), 0);
+ 		if (gdTestAssert(color == 0xFFC800) != 1) {
+ 			error = -1;
+ 		}
+ 	}
+-	if (gdTestAssert(c3 == 2) != 1) {
++	if (gdTestAssert(c3 == 2)) {
+ 		color = gdTrueColorAlpha(gdImageRed(im, c3), gdImageGreen(im, c3),
+ 								gdImageBlue(im, c3), 0);
+ 		if (gdTestAssert(color == 0xFF00FF) != 1) {
+ 			error = -1;
+ 		}
+ 	}
+-	if (gdTestAssert(c4 == -1) != 1) {
++	if (!gdTestAssert(c4 == -1)) {
+ 		error = -1;
+ 	}
+ 
+diff --git a/tests/tiff/tiff_invalid_read.c b/tests/tiff/tiff_invalid_read.c
+index 7acf7cf9..0d129185 100644
+--- a/tests/tiff/tiff_invalid_read.c
++++ b/tests/tiff/tiff_invalid_read.c
+@@ -41,15 +41,18 @@ static size_t read_test_file(char **buffer, char *basename)
+ {
+     char *filename;
+     FILE *fp;
+-    size_t exp_size, act_size;
++    size_t exp_size, act_size = -1;
+ 
+     filename = gdTestFilePath2("tiff", basename);
+     fp = fopen(filename, "rb");
+     if (gdTestAssert(fp != NULL)) goto fail3;
+ 
+-	if (fseek(fp, 0, SEEK_END) != 0) goto fail2;
+-	exp_size = ftell(fp);
+-	if (fseek(fp, 0, SEEK_SET) != 0) goto fail2;
++    if (fseek(fp, 0, SEEK_END) != 0) goto fail2;
++
++    exp_size = ftell(fp);
++    if (gdTestAssert(exp_size <= 0)) goto fail2;
++
++    if (fseek(fp, 0, SEEK_SET) != 0) goto fail2;
+ 
+     *buffer = malloc(exp_size);
+     if (gdTestAssert(*buffer != NULL)) goto fail2;
+-- 
+2.40.1
+

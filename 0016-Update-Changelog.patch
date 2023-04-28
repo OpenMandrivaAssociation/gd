@@ -1,0 +1,26 @@
+From e0516bba73451d9c809aa0fbd17912f04808763b Mon Sep 17 00:00:00 2001
+From: Pierre Joye <pierre.php@gmail.com>
+Date: Sat, 29 Jan 2022 12:32:20 +0700
+Subject: [PATCH 16/40] Update Changelog
+
+---
+ CHANGELOG.md | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/CHANGELOG.md b/CHANGELOG.md
+index a425b14a..e86aaeab 100644
+--- a/CHANGELOG.md
++++ b/CHANGELOG.md
+@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
+ and this project adheres to [Semantic Versioning](http://semver.org/).
+ 
+ ## [2.3.4] - not yet released
++
++### Fixed
++
+ [#797](https://github.com/libgd/libgd/issues/797) possible leak on png error, setjmp lost the row_pointers ref
+ [#788](https://github.com/libgd/libgd/issues/788) fix bug in HEIF usage, stride is require
+ [#775](https://github.com/libgd/libgd/issues/775) Create SECURITY.md
+-- 
+2.40.1
+

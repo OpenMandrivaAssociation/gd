@@ -1,0 +1,24 @@
+From 3a6449a95e21de6dc02de72d0c8e1228766e59bd Mon Sep 17 00:00:00 2001
+From: Pierre Joye <pierre.php@gmail.com>
+Date: Mon, 7 Feb 2022 13:01:42 +0700
+Subject: [PATCH 37/40] update changelog
+
+---
+ CHANGELOG.md | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/CHANGELOG.md b/CHANGELOG.md
+index a01202b8..fcd1ecd6 100644
+--- a/CHANGELOG.md
++++ b/CHANGELOG.md
+@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
+ 
+ - revert support for the legacy/testing gd/gd2 image formats is disabled by default
+ - GD/GD2 is now documented as deprecated (to be removed in 3.0)
++- enable interlace transform when reading png (also silents warning when interlace images are loaded)
+ 
+ ### Fixed
+ 
+-- 
+2.40.1
+

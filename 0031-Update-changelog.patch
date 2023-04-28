@@ -1,0 +1,24 @@
+From 87d15f055326c38cbf19026b77482d81fc3f3129 Mon Sep 17 00:00:00 2001
+From: Pierre Joye <pierre.php@gmail.com>
+Date: Mon, 31 Jan 2022 11:49:04 +0700
+Subject: [PATCH 31/40] Update changelog
+
+---
+ CHANGELOG.md | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/CHANGELOG.md b/CHANGELOG.md
+index 26a288d6..a01202b8 100644
+--- a/CHANGELOG.md
++++ b/CHANGELOG.md
+@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
+ - [#808](https://github.com/libgd/libgd/issues/808) When RAQM is used, and it fails or no text processed, the glyph may be leaked
+ - [#810](https://github.com/libgd/libgd/issues/810) Wrong image freed, src_cloned should be freed if set.
+ - [#812](https://github.com/libgd/libgd/issues/812), ensure operands priorty works as expected
++- [#815](https://github.com/libgd/libgd/issues/815), Ensure no null dereferencing happens using the dither table
+ 
+ ## [2.3.3] - 2021-09-12
+ 
+-- 
+2.40.1
+

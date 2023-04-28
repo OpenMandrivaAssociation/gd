@@ -1,0 +1,51 @@
+From 800a4f494d02ec9b38592cceadca1ef765ebaf77 Mon Sep 17 00:00:00 2001
+From: Pierre Joye <pierre.php@gmail.com>
+Date: Tue, 1 Feb 2022 22:58:21 +0700
+Subject: [PATCH 35/40] partial #818, fix again that logic. I need to find
+ something more generic and convenient to handle errors, assert and free used
+ resources on fail assert
+
+---
+ tests/tiff/tiff_invalid_read.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/tests/tiff/tiff_invalid_read.c b/tests/tiff/tiff_invalid_read.c
+index 3c87bcf6..3fd2a63b 100644
+--- a/tests/tiff/tiff_invalid_read.c
++++ b/tests/tiff/tiff_invalid_read.c
+@@ -41,7 +41,6 @@ static size_t read_test_file(char **buffer, char *basename)
+ {
+     char *filename;
+     FILE *fp;
+-
+     size_t exp_size = 0, act_size = -1;
+ 
+     filename = gdTestFilePath2("tiff", basename);
+@@ -54,7 +53,7 @@ static size_t read_test_file(char **buffer, char *basename)
+     }
+ 
+     exp_size = ftell(fp);
+-    if (!gdTestAssert(exp_size > 0)) {
++    if (exp_size <= 0) {
+         gdTestAssert(1==0); // only increase num failures used as return values in main
+         goto fail2;
+     }
+@@ -65,12 +64,13 @@ static size_t read_test_file(char **buffer, char *basename)
+     }
+ 
+     *buffer = malloc(exp_size);
+-    if (gdTestAssert(*buffer != NULL)) {
++    if (*buffer != NULL) {
+         act_size = fread(*buffer, sizeof(**buffer), exp_size, fp);
+         gdTestAssert(act_size == exp_size);
++    } else {
++        gdTestAssert(0);
+     }
+ 
+-
+ fail2:
+     fclose(fp);
+ fail3:
+-- 
+2.40.1
+

@@ -1,0 +1,27 @@
+From 413fbfbf03cb2a2da2de4689581b922c9dcff44c Mon Sep 17 00:00:00 2001
+From: Pierre Joye <pierre.php@gmail.com>
+Date: Sat, 29 Jan 2022 21:03:29 +0700
+Subject: [PATCH 19/40] Fix #808, When RAQM is used, and it fails or no text
+ processed, the glyph may be leaked (#809)
+
+---
+ src/gdft.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/src/gdft.c b/src/gdft.c
+index acffdeea..745110f8 100644
+--- a/src/gdft.c
++++ b/src/gdft.c
+@@ -1391,6 +1391,9 @@ BGD_DECLARE(char *) gdImageStringFTEx (gdImagePtr im, int *brect, int fg, const
+ 		gdFree (tmpstr);
+ 		gdCacheDelete (tc_cache);
+ 		gdMutexUnlock (gdFontCacheMutex);
++		if (info) {
++			gdFree(info);
++		}
+ 		return "Problem doing text layout";
+ 	}
+ 
+-- 
+2.40.1
+

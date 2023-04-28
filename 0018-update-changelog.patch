@@ -1,0 +1,42 @@
+From e9a36f881ed77dbf33579682820467d4d557c724 Mon Sep 17 00:00:00 2001
+From: Pierre Joye <pierre.php@gmail.com>
+Date: Sat, 29 Jan 2022 12:44:27 +0700
+Subject: [PATCH 18/40] update changelog
+
+---
+ CHANGELOG.md | 16 +++++++++-------
+ 1 file changed, 9 insertions(+), 7 deletions(-)
+
+diff --git a/CHANGELOG.md b/CHANGELOG.md
+index e86aaeab..80b9d04d 100644
+--- a/CHANGELOG.md
++++ b/CHANGELOG.md
+@@ -6,16 +6,18 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
+ 
+ ## [2.3.4] - not yet released
+ 
+-### Fixed
++### Changed
+ 
+-[#797](https://github.com/libgd/libgd/issues/797) possible leak on png error, setjmp lost the row_pointers ref
+-[#788](https://github.com/libgd/libgd/issues/788) fix bug in HEIF usage, stride is require
+-[#775](https://github.com/libgd/libgd/issues/775) Create SECURITY.md
+-[#785](https://github.com/libgd/libgd/issues/785) Fix out of bounds write im->alpha[im->transparent]
++- revert support for the legacy/testing gd/gd2 image formats is disabled by default
++- GD/GD2 is now documented as deprecated (to be removed in 3.0)
+ 
+-### Changed
++### Fixed
++
++- [#797](https://github.com/libgd/libgd/issues/797) possible leak on png error, setjmp lost the row_pointers ref
++- [#788](https://github.com/libgd/libgd/issues/788) fix bug in HEIF usage, stride is require
++- [#775](https://github.com/libgd/libgd/issues/775) Create SECURITY.md
++- [#785](https://github.com/libgd/libgd/issues/785) Fix out of bounds write im->alpha[im->transparent]
+ 
+-- revert support for the legacy/testing gd image formats is disabled by default
+ 
+ ## [2.3.3] - 2021-09-12
+ 
+-- 
+2.40.1
+

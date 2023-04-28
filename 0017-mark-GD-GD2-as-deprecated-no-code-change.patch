@@ -1,0 +1,120 @@
+From 3d0b016f1c66c06389bfd8b70b4eff55376bafd8 Mon Sep 17 00:00:00 2001
+From: Pierre Joye <pierre.php@gmail.com>
+Date: Sat, 29 Jan 2022 12:41:47 +0700
+Subject: [PATCH 17/40] mark GD/GD2 as deprecated (no code change)
+
+---
+ src/gd_gd.c  | 10 +++++-----
+ src/gd_gd2.c | 12 ++++++------
+ 2 files changed, 11 insertions(+), 11 deletions(-)
+
+diff --git a/src/gd_gd.c b/src/gd_gd.c
+index 8c417af9..730fed43 100644
+--- a/src/gd_gd.c
++++ b/src/gd_gd.c
+@@ -195,7 +195,7 @@ fail1:
+ }
+ 
+ /*
+-  Function: gdImageCreateFromGd
++  Function: gdImageCreateFromGd [deprecated]
+ 
+     <gdImageCreateFromGd> is called to load images from gd format
+     files. Invoke <gdImageCreateFromGd> with an already opened pointer
+@@ -252,7 +252,7 @@ BGD_DECLARE(gdImagePtr) gdImageCreateFromGd (FILE * inFile)
+ }
+ 
+ /*
+-  Function: gdImageCreateFromGdPtr
++  Function: gdImageCreateFromGdPtr [deprecated]
+ 
+   Parameters:
+ 
+@@ -273,7 +273,7 @@ BGD_DECLARE(gdImagePtr) gdImageCreateFromGdPtr (int size, void *data)
+ }
+ 
+ /*
+-  Function: gdImageCreateFromGdCtx
++  Function: gdImageCreateFromGdCtx [deprecated]
+ 
+   Reads in a GD image via a <gdIOCtx> struct.  See
+   <gdImageCreateFromGd>.
+@@ -382,7 +382,7 @@ _gdImageGd (gdImagePtr im, gdIOCtx * out)
+ }
+ 
+ /*
+-	Function: gdImageGd
++	Function: gdImageGd [deprecated]
+  */
+ BGD_DECLARE(void) gdImageGd (gdImagePtr im, FILE * outFile)
+ {
+@@ -393,7 +393,7 @@ BGD_DECLARE(void) gdImageGd (gdImagePtr im, FILE * outFile)
+ }
+ 
+ /*
+-	Function: gdImageGdPtr
++	Function: gdImageGdPtr [deprecated]
+  */
+ BGD_DECLARE(void *) gdImageGdPtr (gdImagePtr im, int *size)
+ {
+diff --git a/src/gd_gd2.c b/src/gd_gd2.c
+index e1c35dd5..5ec8ca3f 100644
+--- a/src/gd_gd2.c
++++ b/src/gd_gd2.c
+@@ -325,7 +325,7 @@ _gd2ReadChunk (int offset, char *compBuf, int compSize, char *chunkBuf,
+ 
+ 
+ /*
+-  Function: gdImageCreateFromGd2
++  Function: gdImageCreateFromGd2 [deprecated]
+ 
+     <gdImageCreateFromGd2> is called to load images from gd2 format
+     files. Invoke <gdImageCreateFromGd2> with an already opened
+@@ -383,7 +383,7 @@ BGD_DECLARE(gdImagePtr) gdImageCreateFromGd2 (FILE * inFile)
+ }
+ 
+ /*
+-  Function: gdImageCreateFromGd2Ptr
++  Function: gdImageCreateFromGd2Ptr [deprecated]
+ 
+   Parameters:
+ 
+@@ -404,7 +404,7 @@ BGD_DECLARE(gdImagePtr) gdImageCreateFromGd2Ptr (int size, void *data)
+ }
+ 
+ /*
+-  Function: gdImageCreateFromGd2Ctx
++  Function: gdImageCreateFromGd2Ctx [deprecated]
+ 
+   Reads in a GD2 image via a <gdIOCtx> struct.  See
+   <gdImageCreateFromGd2>.
+@@ -575,7 +575,7 @@ fail:
+ 
+ 
+ /*
+-  Function: gdImageCreateFromGd2Part
++  Function: gdImageCreateFromGd2Part [deprecated]
+ 
+     <gdImageCreateFromGd2Part> is called to load parts of images from
+     gd2 format files. Invoked in the same way as <gdImageCreateFromGd2>,
+@@ -618,7 +618,7 @@ BGD_DECLARE(gdImagePtr) gdImageCreateFromGd2Part (FILE * inFile, int srcx, int s
+ }
+ 
+ /*
+-  Function: gdImageCreateFromGd2PartPtr
++  Function: gdImageCreateFromGd2PartPtr [deprecated]
+ 
+   Parameters:
+ 
+@@ -644,7 +644,7 @@ BGD_DECLARE(gdImagePtr) gdImageCreateFromGd2PartPtr (int size, void *data, int s
+ 
+ 
+ /*
+-  Function: gdImageCreateFromGd2PartCtx
++  Function: gdImageCreateFromGd2PartCtx [deprecated]
+ 
+   Parameters:
+ 
+-- 
+2.40.1
+

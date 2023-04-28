@@ -1,0 +1,162 @@
+From 813d054abf8de574867b0143306b957ec092afe7 Mon Sep 17 00:00:00 2001
+From: Pierre Joye <pierre.php@gmail.com>
+Date: Tue, 1 Feb 2022 22:25:03 +0700
+Subject: [PATCH 34/40] Bug/818 (#821)
+
+* Partial #818, unused arg
+
+* Partial #818, init var
+
+* partail #818, fix va_args usage
+
+* partail #818, handle f* calls and avoid possible call to malloc with negative values
+
+* partail #818, prevent double free
+
+* partail #818, resource leak if test fail
+
+* partail #818, null deref fix
+
+* partail #818, avoid double free on fp failure
+
+* Partial #818, fix error msg
+
+* Partial #818, leak on error
+
+* Partial #818, null deref
+
+* Partial #818, avoid possible negative index on failure
+
+* partial #818, does not free if we return if requested new size overflow
+
+* partial #818, avoid double free, free where the alloc happened
+
+* partial #818, fix assert logic and test exp_size for <=0
+
+* partial #818, fix assert logic for color idx test
+
+* partial #818, new case for possible leak, improve logic
+
+* partial #818, fix assert logic for color idx test
+---
+ .../gdimagecolorclosest/gdimagecolorclosest.c | 18 ++++++++++--
+ tests/gdimagecolorexact/gdimagecolorexact.c   |  3 +-
+ tests/tiff/tiff_invalid_read.c                | 28 +++++++++++++------
+ 3 files changed, 37 insertions(+), 12 deletions(-)
+
+diff --git a/tests/gdimagecolorclosest/gdimagecolorclosest.c b/tests/gdimagecolorclosest/gdimagecolorclosest.c
+index 4754a2c2..f6fd7428 100644
+--- a/tests/gdimagecolorclosest/gdimagecolorclosest.c
++++ b/tests/gdimagecolorclosest/gdimagecolorclosest.c
+@@ -26,7 +26,13 @@ int main()
+ 	im = gdImageCreate(5, 5);
+ 	c = gdImageColorAllocate(im, 255, 0, 255);
+ 	c = gdImageColorClosest(im, 255, 0, 255);
+-	c = gdTrueColorAlpha(gdImageRed(im, c), gdImageGreen(im, c), gdImageBlue(im, c), 0);
++	c = gdTestAssert(c>=0) ?
++		gdTrueColorAlpha(gdImageRed(im, c), gdImageGreen(im, c), gdImageBlue(im, c), 0)
++		:
++		-1;
++
++
++
+ 	gdImageDestroy(im);
+ 	if (gdTestAssert(c==0xFF00FF) != 1) {
+ 		error = -1;
+@@ -38,7 +44,10 @@ int main()
+ 		c = gdImageColorAllocate(im, 255, 0, 0);
+ 	}
+ 	c = gdImageColorClosest(im, 255, 0, 0);
+-	c = gdTrueColorAlpha(gdImageRed(im, c), gdImageGreen(im, c), gdImageBlue(im, c), 0);
++	c = gdTestAssert(c>=0) ?
++		gdTrueColorAlpha(gdImageRed(im, c), gdImageGreen(im, c), gdImageBlue(im, c), 0)
++		:
++		-1;
+ 	gdImageDestroy(im);
+ 	if (gdTestAssert(c==0xFF0000) != 1) {
+ 		error = -1;
+@@ -49,7 +58,10 @@ int main()
+ 		c = gdImageColorAllocate(im, 255, 0, 0);
+ 	}
+ 	c = gdImageColorClosest(im, 255, 0, 0);
+-	c = gdTrueColorAlpha(gdImageRed(im, c), gdImageGreen(im, c), gdImageBlue(im, c), 0);
++	c = gdTestAssert(c>=0) ?
++		gdTrueColorAlpha(gdImageRed(im, c), gdImageGreen(im, c), gdImageBlue(im, c), 0)
++		:
++		-1;
+ 	gdImageDestroy(im);
+ 	if (gdTestAssert(c==0xFF0000) != 1) {
+ 		error = -1;
+diff --git a/tests/gdimagecolorexact/gdimagecolorexact.c b/tests/gdimagecolorexact/gdimagecolorexact.c
+index 54698df9..055127bc 100644
+--- a/tests/gdimagecolorexact/gdimagecolorexact.c
++++ b/tests/gdimagecolorexact/gdimagecolorexact.c
+@@ -36,8 +36,8 @@ int main()
+ 		if (gdTestAssert(color == 0xFF00FF) != 1) {
+ 			error = -1;
+ 		}
+-	}
+ 
++	}
+ 	if (gdTestAssert(c2 == 1)) {
+ 		color = gdTrueColorAlpha(gdImageRed(im, c2), gdImageGreen(im, c2),
+ 								gdImageBlue(im, c2), 0);
+@@ -56,6 +56,7 @@ int main()
+ 		error = -1;
+ 	}
+ 
++
+ 	gdImageDestroy(im);
+ 
+ 	return error;
+diff --git a/tests/tiff/tiff_invalid_read.c b/tests/tiff/tiff_invalid_read.c
+index 0d129185..3c87bcf6 100644
+--- a/tests/tiff/tiff_invalid_read.c
++++ b/tests/tiff/tiff_invalid_read.c
+@@ -41,23 +41,35 @@ static size_t read_test_file(char **buffer, char *basename)
+ {
+     char *filename;
+     FILE *fp;
+-    size_t exp_size, act_size = -1;
++
++    size_t exp_size = 0, act_size = -1;
+ 
+     filename = gdTestFilePath2("tiff", basename);
+     fp = fopen(filename, "rb");
+-    if (gdTestAssert(fp != NULL)) goto fail3;
++    if (!gdTestAssert(fp != NULL)) goto fail3;
+ 
+-    if (fseek(fp, 0, SEEK_END) != 0) goto fail2;
++    if (fseek(fp, 0, SEEK_END) != 0) {
++        gdTestAssert(1==0); // only increase num failures used as return values in main
++        goto fail2;
++    }
+ 
+     exp_size = ftell(fp);
+-    if (gdTestAssert(exp_size <= 0)) goto fail2;
++    if (!gdTestAssert(exp_size > 0)) {
++        gdTestAssert(1==0); // only increase num failures used as return values in main
++        goto fail2;
++    }
+ 
+-    if (fseek(fp, 0, SEEK_SET) != 0) goto fail2;
++    if (fseek(fp, 0, SEEK_SET) != 0) {
++        gdTestAssert(1==0); // only increase num failures used as return values in main
++        goto fail2;
++    }
+ 
+     *buffer = malloc(exp_size);
+-    if (gdTestAssert(*buffer != NULL)) goto fail2;
+-    act_size = fread(*buffer, sizeof(**buffer), exp_size, fp);
+-    gdTestAssert(act_size == exp_size);
++    if (gdTestAssert(*buffer != NULL)) {
++        act_size = fread(*buffer, sizeof(**buffer), exp_size, fp);
++        gdTestAssert(act_size == exp_size);
++    }
++
+ 
+ fail2:
+     fclose(fp);
+-- 
+2.40.1
+

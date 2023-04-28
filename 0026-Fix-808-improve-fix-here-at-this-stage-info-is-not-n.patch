@@ -1,0 +1,39 @@
+From 5bdb4d57778183f802be40e105ca998ebcf47945 Mon Sep 17 00:00:00 2001
+From: Pierre Joye <pierre.php@gmail.com>
+Date: Sun, 30 Jan 2022 10:40:36 +0700
+Subject: [PATCH 26/40] Fix #808, improve fix here, at this stage info is not
+ null (deref earlier too)
+
+---
+ src/gdft.c | 8 ++------
+ 1 file changed, 2 insertions(+), 6 deletions(-)
+
+diff --git a/src/gdft.c b/src/gdft.c
+index 2841704e..83f3a3e0 100644
+--- a/src/gdft.c
++++ b/src/gdft.c
+@@ -1515,9 +1515,7 @@ BGD_DECLARE(char *) gdImageStringFTEx (gdImagePtr im, int *brect, int fg, const
+ 				gdFree(text);
+ 				gdCacheDelete (tc_cache);
+ 				gdMutexUnlock (gdFontCacheMutex);
+-				if (info) {
+-					gdFree(info);
+-				}
++				gdFree(info);
+ 				return "Problem loading glyph";
+ 			}
+ 
+@@ -1533,9 +1531,7 @@ BGD_DECLARE(char *) gdImageStringFTEx (gdImagePtr im, int *brect, int fg, const
+ 					gdFree(text);
+ 					gdCacheDelete (tc_cache);
+ 					gdMutexUnlock (gdFontCacheMutex);
+-					if (info) {
+-						gdFree(info);
+-					}
++					gdFree(info);
+ 					return "Problem rendering glyph";
+ 				}
+ 			}
+-- 
+2.40.1
+

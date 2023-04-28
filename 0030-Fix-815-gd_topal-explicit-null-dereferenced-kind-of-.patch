@@ -1,0 +1,34 @@
+From 077d8e7861d021b5e937cc859f377c9159ac5473 Mon Sep 17 00:00:00 2001
+From: Pierre Joye <pierre.php@gmail.com>
+Date: Mon, 31 Jan 2022 11:46:15 +0700
+Subject: [PATCH 30/40] =?UTF-8?q?Fix=20#815,=20gd=5Ftopal,=20explicit=20nu?=
+ =?UTF-8?q?ll=20dereferenced=20(kind=20of=20false=20positiv=E2=80=A6=20(#8?=
+ =?UTF-8?q?16)?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+* Fix #815, gd_topal, explicit null dereferenced (kind of false positive however it does hurt to add that check)
+
+* Fix #815, != NULL
+---
+ src/gd_topal.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/src/gd_topal.c b/src/gd_topal.c
+index 5ac226ae..e9757fc2 100644
+--- a/src/gd_topal.c
++++ b/src/gd_topal.c
+@@ -1703,6 +1703,9 @@ static int gdImageTrueColorToPaletteBody (gdImagePtr oim, int dither, int colors
+ 	select_colors (oim, nim, cquantize, colorsWanted);
+ 	zeroHistogram (cquantize->histogram);
+ 	if (dither) {
++		if (cquantize->error_limiter == NULL) {
++			goto outOfMemory;
++		}
+ 		pass2_fs_dither (oim, nim, cquantize);
+ 	} else {
+ 		pass2_no_dither (oim, nim, cquantize);
+-- 
+2.40.1
+

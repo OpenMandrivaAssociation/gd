@@ -1,0 +1,127 @@
+From f896b3a1a5c67240578cdc61eb4b34dbfd29b8b5 Mon Sep 17 00:00:00 2001
+From: Pierre Joye <pierre.php@gmail.com>
+Date: Sun, 23 Jan 2022 11:57:49 +0700
+Subject: [PATCH 11/40] =?UTF-8?q?#797=20possible=20leak=20on=20png=20error?=
+ =?UTF-8?q?,=20returns=20from=20setjmp=20lost=20the=20row=5Fpoi=E2=80=A6?=
+ =?UTF-8?q?=20(#802)?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+* #797 possible leak on png error, returns from setjmp lost the row_pointers ref somehow
+
+* skip that one using mingw until we have a reliable portable FP related tests suites (may never happpen)
+---
+ src/gd_png.c                         |   3 ++-
+ tests/gd2/CMakeLists.txt             |   1 +
+ tests/gd2/bug797.c                   |  32 +++++++++++++++++++++++++++
+ tests/gd2/bug797.gd2                 | Bin 0 -> 2321 bytes
+ tests/gdimagestringft/CMakeLists.txt |   6 +++++
+ 5 files changed, 41 insertions(+), 1 deletion(-)
+ create mode 100644 tests/gd2/bug797.c
+ create mode 100644 tests/gd2/bug797.gd2
+
+diff --git a/src/gd_png.c b/src/gd_png.c
+index c99fd308..428a0201 100644
+--- a/src/gd_png.c
++++ b/src/gd_png.c
+@@ -1074,11 +1074,12 @@ static int _gdImagePngCtxEx(gdImagePtr im, gdIOCtx * outfile, int level)
+ 			}
+ 
+ 			png_write_image (png_ptr, row_pointers);
+-			png_write_end (png_ptr, info_ptr);
+ 
+ 			for (j = 0; j < height; ++j)
+ 				gdFree (row_pointers[j]);
+ 			gdFree (row_pointers);
++
++			png_write_end (png_ptr, info_ptr);
+ 		} else {
+ 			png_write_image (png_ptr, im->pixels);
+ 			png_write_end (png_ptr, info_ptr);
+diff --git a/tests/gd2/CMakeLists.txt b/tests/gd2/CMakeLists.txt
+index cc188ca0..0a9a1579 100644
+--- a/tests/gd2/CMakeLists.txt
++++ b/tests/gd2/CMakeLists.txt
+@@ -6,6 +6,7 @@ LIST(APPEND TESTS_FILES
+ 	bug00309
+ 	bug00354
+ 	bug00383
++	bug797
+ 	createimagefromgd2part
+ 	createimagefromgd2partptr
+ 	gd2_empty_file
+diff --git a/tests/gd2/bug797.c b/tests/gd2/bug797.c
+new file mode 100644
+index 00000000..89adeddd
+--- /dev/null
++++ b/tests/gd2/bug797.c
+@@ -0,0 +1,32 @@
++/**
++ * Test that invalid transparent colors can't be read
++ *
++ * We're reading a corrupt palette image in GD2 format, which has only a single
++ * palette entry, but claims that the transparent color would be 1.  We check
++ * that the transparency is simply ignored in this case.
++ *
++ * See also <https://github.com/libgd/libgd/issues/383>
++ */
++
++
++#include "gd.h"
++#include "gdtest.h"
++
++
++int main()
++{
++    gdImagePtr im;
++    FILE *fp;
++
++    fp = gdTestFileOpen2("gd2", "bug797.gd2");
++    gdTestAssert(fp != NULL);
++    im = gdImageCreateFromGd2(fp);
++    gdTestAssert(im != NULL);
++    fclose(fp);
++
++    gdTestAssert(gdImageGetTransparent(im) == -1);
++
++    gdImageDestroy(im);
++
++    return gdNumFailures();
++}
+diff --git a/tests/gd2/bug797.gd2 b/tests/gd2/bug797.gd2
+new file mode 100644
+index 0000000000000000000000000000000000000000..1b417629508f60f1f3a8b51026128183491921a9
+GIT binary patch
+literal 2321
+zcmYdKF=Aj~V&Gu7&(OfY$nb%Ik%57Sp8*OuBpCiP=u!mikagE1b8xZ!aY+m!ad)EJ
+zqDYh~`Y5tRvW9_yk-}I-GHe(#1*qsZXpRC=^&kQR|NsC0ABG@?fFgqf19trwN)ZC}
+zOn?6W{}1Aefe0}E|Ns9hFoS`C0U`(Ekxfg13J-*CQk~g=(8?h65A0kd5p2x2*aY#3
+zA!}HLPhkpN@&}Z~0;Lg@9EAD*|NpxX)*#4Jqq!VwmJPrviVz&l=+G2Q97SP9hg(uX
+j3itt2Jf)(d0&WBn<L7@yBpw43G6#+Q8ODDPW58(u0Np(8
+
+literal 0
+HcmV?d00001
+
+diff --git a/tests/gdimagestringft/CMakeLists.txt b/tests/gdimagestringft/CMakeLists.txt
+index 42868a27..d1d8c612 100644
+--- a/tests/gdimagestringft/CMakeLists.txt
++++ b/tests/gdimagestringft/CMakeLists.txt
+@@ -1,8 +1,14 @@
+ IF(FREETYPE_FOUND)
+ LIST(APPEND TESTS_FILES
+ 	bug00615
++)
++
++IF (NOT MINGW)
++LIST(APPEND TESTS_FILES
+ 	gdimagestringft_bbox
+ )
++ENDIF(NOT MINGW)
++
+ ENDIF(FREETYPE_FOUND)
+ 
+ ADD_GD_TESTS()
+-- 
+2.40.1
+

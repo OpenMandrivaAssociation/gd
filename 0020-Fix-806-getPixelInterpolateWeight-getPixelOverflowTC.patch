@@ -1,0 +1,90 @@
+From 78fa4a9eafb48abdc4c7f037a29fba1c3d5cba97 Mon Sep 17 00:00:00 2001
+From: Pierre Joye <pierre.php@gmail.com>
+Date: Sat, 29 Jan 2022 21:03:47 +0700
+Subject: [PATCH 20/40] =?UTF-8?q?Fix=20#806,=20getPixelInterpolateWeight,?=
+ =?UTF-8?q?=20getPixelOverflowTC,=20getPixelOver=E2=80=A6=20(#807)?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+* Fix #806, getPixelInterpolateWeight, getPixelOverflowTC, getPixelOverflowPalette, gdImageRotate* take bgcolor as GD's truecolor, result is a TC image as well.Clean dead code.
+
+* Not needed at this stage
+---
+ src/gd_interpolation.c | 27 ++++++++++-----------------
+ 1 file changed, 10 insertions(+), 17 deletions(-)
+
+diff --git a/src/gd_interpolation.c b/src/gd_interpolation.c
+index 6a4d6c9a..d1ebfc9c 100644
+--- a/src/gd_interpolation.c
++++ b/src/gd_interpolation.c
+@@ -622,22 +622,22 @@ static inline int _setEdgePixel(const gdImagePtr src, unsigned int x, unsigned i
+ }
+ #endif
+ 
+-static inline int getPixelOverflowTC(gdImagePtr im, const int x, const int y, const int bgColor)
++static inline int getPixelOverflowTC(gdImagePtr im, const int x, const int y, const int bgColor /* 31bit ARGB TC */)
+ {
+ 	if (gdImageBoundsSafe(im, x, y)) {
+ 		const int c = im->tpixels[y][x];
+ 		if (c == im->transparent) {
+ 			return bgColor == -1 ? gdTrueColorAlpha(0, 0, 0, 127) : bgColor;
+ 		}
+-		return c;
++		return c;  /* 31bit ARGB TC */
+ 	} else {
+-		return bgColor;
++		return bgColor;  /* 31bit ARGB TC */
+ 	}
+ }
+ 
+ #define colorIndex2RGBA(c) gdTrueColorAlpha(im->red[(c)], im->green[(c)], im->blue[(c)], im->alpha[(c)])
+ #define colorIndex2RGBcustomA(c, a) gdTrueColorAlpha(im->red[(c)], im->green[(c)], im->blue[(c)], im->alpha[(a)])
+-static inline int getPixelOverflowPalette(gdImagePtr im, const int x, const int y, const int bgColor)
++static inline int getPixelOverflowPalette(gdImagePtr im, const int x, const int y, const int bgColor  /* 31bit ARGB TC */)
+ {
+ 	if (gdImageBoundsSafe(im, x, y)) {
+ 		const int c = im->pixels[y][x];
+@@ -646,7 +646,7 @@ static inline int getPixelOverflowPalette(gdImagePtr im, const int x, const int
+ 		}
+ 		return colorIndex2RGBA(c);
+ 	} else {
+-		return bgColor;
++		return bgColor;  /* 31bit ARGB TC */
+ 	}
+ }
+ 
+@@ -675,17 +675,10 @@ static int getPixelInterpolateWeight(gdImagePtr im, const double x, const double
+ 	if (y < 0) sy--;
+ 
+ 	/* component-wise summing-up of color values */
+-	if (im->trueColor) {
+-		r = (int)(m1*gdTrueColorGetRed(c1)   + m2*gdTrueColorGetRed(c2)   + m3*gdTrueColorGetRed(c3)   + m4*gdTrueColorGetRed(c4));
+-		g = (int)(m1*gdTrueColorGetGreen(c1) + m2*gdTrueColorGetGreen(c2) + m3*gdTrueColorGetGreen(c3) + m4*gdTrueColorGetGreen(c4));
+-		b = (int)(m1*gdTrueColorGetBlue(c1)  + m2*gdTrueColorGetBlue(c2)  + m3*gdTrueColorGetBlue(c3)  + m4*gdTrueColorGetBlue(c4));
+-		a = (int)(m1*gdTrueColorGetAlpha(c1) + m2*gdTrueColorGetAlpha(c2) + m3*gdTrueColorGetAlpha(c3) + m4*gdTrueColorGetAlpha(c4));
+-	} else {
+-		r = (int)(m1*im->red[(c1)]   + m2*im->red[(c2)]   + m3*im->red[(c3)]   + m4*im->red[(c4)]);
+-		g = (int)(m1*im->green[(c1)] + m2*im->green[(c2)] + m3*im->green[(c3)] + m4*im->green[(c4)]);
+-		b = (int)(m1*im->blue[(c1)]  + m2*im->blue[(c2)]  + m3*im->blue[(c3)]  + m4*im->blue[(c4)]);
+-		a = (int)(m1*im->alpha[(c1)] + m2*im->alpha[(c2)] + m3*im->alpha[(c3)] + m4*im->alpha[(c4)]);
+-	}
++	r = (int)(m1*gdTrueColorGetRed(c1)   + m2*gdTrueColorGetRed(c2)   + m3*gdTrueColorGetRed(c3)   + m4*gdTrueColorGetRed(c4));
++	g = (int)(m1*gdTrueColorGetGreen(c1) + m2*gdTrueColorGetGreen(c2) + m3*gdTrueColorGetGreen(c3) + m4*gdTrueColorGetGreen(c4));
++	b = (int)(m1*gdTrueColorGetBlue(c1)  + m2*gdTrueColorGetBlue(c2)  + m3*gdTrueColorGetBlue(c3)  + m4*gdTrueColorGetBlue(c4));
++	a = (int)(m1*gdTrueColorGetAlpha(c1) + m2*gdTrueColorGetAlpha(c2) + m3*gdTrueColorGetAlpha(c3) + m4*gdTrueColorGetAlpha(c4));
+ 
+ 	r = CLAMP(r, 0, 255);
+ 	g = CLAMP(g, 0, 255);
+@@ -737,7 +730,7 @@ int getPixelInterpolated(gdImagePtr im, const double x, const double y, const in
+ 			return getPixelOverflowPalette(im, xi, yi, bgColor);
+ 		}
+ 	}
+-	// TODO Add support
++
+ 	if (im->interpolation) {
+ 		for (i=0; i<4; i++) {
+ 			kernel_x[i] = (double) im->interpolation((double)(xi+i-1-x), 1.0);
+-- 
+2.40.1
+

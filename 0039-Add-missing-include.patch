@@ -1,0 +1,27 @@
+From 46eb3c5c31c942154994b39faa3f21189a15688b Mon Sep 17 00:00:00 2001
+From: Kai Pastor <dg0yt@darc.de>
+Date: Sun, 30 Oct 2022 09:29:37 +0100
+Subject: [PATCH 39/40] Add missing include
+
+`gd_webp.c` needs `ssize_t` which is defined in `gd_intern.h` for MSVC.
+
+(cherry picked from commit fe3e0d388c5b964d8ac2612e31b28344d400b063)
+---
+ src/gd_webp.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/src/gd_webp.c b/src/gd_webp.c
+index e9ad8023..11824f2a 100644
+--- a/src/gd_webp.c
++++ b/src/gd_webp.c
+@@ -16,6 +16,7 @@
+ #include "gd.h"
+ #include "gd_errors.h"
+ #include "gdhelpers.h"
++#include "gd_intern.h"
+ 
+ #ifdef HAVE_LIBWEBP
+ #include "webp/decode.h"
+-- 
+2.40.1
+

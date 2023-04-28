@@ -1,0 +1,35 @@
+From 483da683de9d812b82ef4e63f0e7b125115709b0 Mon Sep 17 00:00:00 2001
+From: Remi Collet <remi@remirepo.net>
+Date: Mon, 27 Sep 2021 12:01:39 +0200
+Subject: [PATCH 09/40] Document the revert in changelog
+
+---
+ CHANGELOG.md | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+diff --git a/CHANGELOG.md b/CHANGELOG.md
+index 829afd9c..b9a6417f 100644
+--- a/CHANGELOG.md
++++ b/CHANGELOG.md
+@@ -4,8 +4,18 @@ All notable changes to this project will be documented in this file.
+ The format is based on [Keep a Changelog](http://keepachangelog.com/)
+ and this project adheres to [Semantic Versioning](http://semver.org/).
+ 
++## [2.3.4] - not yet released
++
++### Changed
++
++- revert support for the legacy/testing gd image formats is disabled by default
++
+ ## [2.3.3] - 2021-09-12
+ 
++### Changed
++
++- support for the legacy/testing gd image formats is disabled by default
++
+ ### Fixed
+ 
+ - [#759](https://github.com/libgd/libgd/issues/759) update cmake to generate config.h in the build dir
+-- 
+2.40.1
+

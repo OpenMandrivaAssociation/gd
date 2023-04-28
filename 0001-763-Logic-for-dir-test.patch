@@ -1,0 +1,33 @@
+From 6137cf60e8c37e54b2954bb5053f0d0a7fe8f66c Mon Sep 17 00:00:00 2001
+From: Pierre Joye <pierre.php@gmail.com>
+Date: Sat, 11 Sep 2021 22:01:22 +0700
+Subject: [PATCH 01/40] #763, Logic for dir test
+
+---
+ tests/gdtest/gdtest.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/tests/gdtest/gdtest.c b/tests/gdtest/gdtest.c
+index 41502389..69efda05 100644
+--- a/tests/gdtest/gdtest.c
++++ b/tests/gdtest/gdtest.c
+@@ -88,13 +88,13 @@ int gdTestIsDir(char *path) {
+ 		return 0;
+ 	}
+ 	if (data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
+-		return 0;
+-	} else {
+ 		return 1;
++	} else {
++		return 0;
+ 	}
+ #else
+ 	struct stat st;
+-	if (lstat(path, &st) != 0)
++	if (lstat(path, &st) == 0)
+ 
+ 	if (S_ISDIR(st.st_mode))
+ 		return 1;
+-- 
+2.40.1
+

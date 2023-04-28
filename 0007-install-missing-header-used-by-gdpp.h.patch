@@ -1,7 +1,7 @@
 From 01bcbdcae35b90de082012e639094c711a7aa2b3 Mon Sep 17 00:00:00 2001
 From: Remi Collet <remi@remirepo.net>
 Date: Mon, 13 Sep 2021 15:05:18 +0200
-Subject: [PATCH] install missing header, used by gdpp.h
+Subject: [PATCH 07/40] install missing header, used by gdpp.h
 
 ---
  src/CMakeLists.txt | 1 +
@@ -33,3 +33,6 @@ index dbe9243c..c8c779f1 100644
  
  lib_LTLIBRARIES = libgd.la
  
+-- 
+2.40.1
+
