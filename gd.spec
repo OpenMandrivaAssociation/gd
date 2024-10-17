@@ -18,7 +18,7 @@ Version:	2.3.3
 Release:	4
 License:	BSD-style
 Group:		System/Libraries
-Url:		http://libgd.org/
+Url:		https://libgd.org/
 Source0:	https://github.com/libgd/libgd/releases/download/gd-%{version}/libgd-%{version}.tar.xz
 # From upstream git
 Patch0:		0001-763-Logic-for-dir-test.patch
