@@ -61,6 +61,11 @@ Patch39:	0040-Fix-847-enable-back-GD_BICUBIC-interpolation-methods.patch
 # OM patches
 Patch500:	gd-2.3.3-clang16-gcc13.patch
 
+BuildRequires:	autoconf
+BuildRequires:	automake
+BuildRequires:	libtool-base
+BuildRequires:	slibtool
+BuildRequires:	make
 BuildRequires:	gettext-devel
 BuildRequires:	git-core
 BuildRequires:	pkgconfig(libjpeg)
